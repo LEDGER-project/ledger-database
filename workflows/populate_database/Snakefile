@@ -1,0 +1,27 @@
+include: "rules/actors.smk"
+include: "rules/population.smk"
+include: "rules/gdp.smk"
+include: "rules/emission_targets.smk"
+include: "rules/emissions.smk"
+include: "rules/gwp.smk"
+include: "rules/sectors.smk"
+# include: "rules/energy_consumption.smk"
+
+rule all:
+    input:
+        "logs/gwp.log",
+        "logs/crt-on-nir.log",
+        "logs/earth.log",
+        "logs/iso-3166-1.log",
+        "logs/iso-3166-2.log",
+        "logs/locode.log",
+        "logs/wpp.log",
+        "logs/world-bank-gdp.log",
+        "logs/fred-state-population.log",
+        "logs/canada-province-population.log",
+        "logs/net-zero-tracker.log",
+        "logs/primap.log",
+        "logs/epa-state-emissions.log",
+        "logs/eccc-ghg-inventory.log",
+        "logs/naei-gb-subnational-emissions.log",
+        "logs/au-state-emissions.log"
