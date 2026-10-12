@@ -1,0 +1,6 @@
+[submodule "documentation"]
+	path = documentation
+	url = https://github.com/LEDGER-project/LEDGER-project.github.io
+[submodule "python-client"]
+	path = python-client
+	url = https://github.com/LEDGER-project/ledgerdata
