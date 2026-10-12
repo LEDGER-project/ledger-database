@@ -5,6 +5,9 @@ notebooks/
 # zip files
 *.zip
 
+# api keys
+.api_keys
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
