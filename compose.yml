@@ -1,0 +1,29 @@
+volumes:
+  ledger_data:
+
+networks:
+  ledger_network:
+
+services:
+  postgres_db:
+    image: postgres:latest
+    container_name: ledger_db
+    env_file: ".env"
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - ledger_data:/var/lib/postgresql/data
+    networks:
+      - ledger_network
+
+  api:
+    build: .
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres_db
+    networks:
+      - ledger_network
