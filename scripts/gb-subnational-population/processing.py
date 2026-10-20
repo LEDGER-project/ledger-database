@@ -46,8 +46,16 @@ if __name__ == "__main__":
         publisher=publisher,
         published_date=datetime.strptime("2024-07-15", "%Y-%m-%d"),
         version="mid-2023",
-        url=f"https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland/mid2024/mye24tablesuk.xlsx",
+        url="https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland/mid2024/mye24tablesuk.xlsx",
     )
+
+    write_csv(
+        output_dir=output_dir,
+        name=DataSource.__tablename__,
+        data=datasource.model_dump(),
+        mode="w",
+    )
+
 
     # get actors
     fl_actors = (
@@ -75,7 +83,7 @@ if __name__ == "__main__":
         #Path(__file__).resolve().parent.parent.parent
         Path.cwd().resolve().parent.parent
         / "data"
-        / "gb-subnational-population"
+        / f"{datasource_name}"
         / "raw"
         / "ukpopulationestimates183820231.xlsx"
     )
@@ -98,8 +106,8 @@ if __name__ == "__main__":
             .assign(
                 year = lambda d: d["Year"].apply(lambda x: x.split("-")[1]),
                 actor_id = actor_id, 
-                #id = lambda d: d.apply(lambda x: f"{x['actor_id']}:{x['year']}", axis=1),
-                #datasource_id = datasource.id
+                id = lambda d: d.apply(lambda x: f"{x['actor_id']}:{x['year']}", axis=1),
+                datasource_id = datasource.id
                 )
             .rename(columns={"Persons":"population"})
             .query("population != 'missing data'")
