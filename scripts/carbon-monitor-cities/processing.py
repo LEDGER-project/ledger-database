@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     # load data and define output directory
     data_dir = (
-        Path(__file__).resolve().parent.parent.parent / "data" / "carbon-monitor-cities" / "processed"
+        Path(__file__).resolve().parent.parent.parent / "data" / f"{datasource_name}" / "processed"
     )
     output_dir = data_dir / "processed"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     fl = (Path(__file__).resolve().parent.parent.parent 
         / "data" 
-        / "carbon-monitor-cities" 
+        / f"{datasource_name}"
         / "raw" 
         / "carbonmonitor-cities_datas_2025-12-05.csv"
         )
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     write_csv(
         output_dir=output_dir,
         name=DataSource.__tablename__,
-        data=datasource,
+        data=datasource.model_dump(),
         mode="w",
     )
 
