@@ -1,6 +1,9 @@
 #joss
 paper/jats/
 
+#snakemake
+.snakemake
+
 #directories
 data/
 notebooks/
