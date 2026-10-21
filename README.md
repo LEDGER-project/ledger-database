@@ -62,7 +62,7 @@ How you have an empty [Postgres](https://www.postgresql.org/) database server ru
 There is no data in here ... yet. But when there is, one tool you can use is `psql` to send SQL queries to the database. Here the connection string:
 
 ```sh
-psql -h localhost -p 5432 -U postgres -W -d ghgtracker
+psql -h localhost -p 5432 -U postgres -W -d ledger
 ```
 
 Alternatively, you could use a scripting language such as Python with the `psycopg` package to query the database. Dealer's choice.
