@@ -19,9 +19,14 @@ rule all:
         "logs/world-bank-gdp.log",
         "logs/fred-state-population.log",
         "logs/canada-province-population.log",
+        "logs/abs-national-state-and-territory-population.log",
         "logs/net-zero-tracker.log",
+        "logs/net-zero-regions.log",
         "logs/primap.log",
+        "logs/unfccc-annex1.log",
         "logs/epa-state-emissions.log",
         "logs/eccc-ghg-inventory.log",
         "logs/naei-gb-subnational-emissions.log",
-        "logs/au-state-emissions.log"
+        "logs/au-state-emissions.log",
+        "logs/carbon-monitor-cities.log",
+        "logs/c40.log"

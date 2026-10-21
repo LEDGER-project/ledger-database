@@ -1,3 +1,13 @@
+rule unfccc_annex1:
+    input:
+        "logs/iso-3166-1.log",
+        "logs/crt-on-nir.log",
+        "logs/gwp.log"
+    output:
+        "logs/unfccc-annex1.log"
+    shell:
+        "importer bulk unfccc-annex1 > {output}"
+
 rule primap:
     input:
         "logs/iso-3166-1.log",
@@ -51,3 +61,23 @@ rule au_state_emissions:
         "logs/au-state-emissions.log"
     shell:
         "importer bulk au-state-emissions > {output}"
+
+rule carbon_monitor_cities:
+    input:
+        "logs/locode.log",
+        "logs/crt-on-nir.log",
+        "logs/gwp.log"
+    output:
+        "logs/carbon-monitor-cities.log"
+    shell:
+        "importer bulk carbon-monitor-cities > {output}"
+
+rule c40:
+    input:
+        "logs/locode.log",
+        "logs/crt-on-nir.log",
+        "logs/gwp.log"
+    output:
+        "logs/c40.log"
+    shell:
+        "importer bulk c40 > {output}"

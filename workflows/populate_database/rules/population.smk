@@ -33,3 +33,14 @@ rule canada_province_population:
     shell:
         "importer bulk canada-province-population > {output}"
 
+
+#---------------------------------------------------
+# Australian state populations
+#---------------------------------------------------
+rule abs_national_state_and_territory_population:
+    input:
+        "logs/iso-3166-2.log"
+    output:
+        "logs/abs-national-state-and-territory-population.log"
+    shell:
+        "importer bulk abs-national-state-and-territory-population > {output}"
