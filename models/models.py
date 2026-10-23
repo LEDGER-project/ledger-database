@@ -1,9 +1,10 @@
+##############################################################
 #
 # LEDGER Database Schema
-# these tables are used to setup the database
-# and serve as way to validate any data imported into the database
+# table used to setup the database
+# and serve to validate data imported into the database
 #
-
+##############################################################
 
 from enum import Enum
 from sqlmodel import SQLModel, Column, Field, TIMESTAMP, text, FetchedValue
@@ -62,7 +63,10 @@ class GasType(str, Enum):
 # ============================================================
 
 
-# track external data sources for actor, emissions, targets, and contexual data
+# --------------------------------------------------------------
+# Datasource
+# track external data sources for all data in the database
+# --------------------------------------------------------------
 class DataSource(SQLModel, table=True):
     id: str = Field(primary_key=True)
     name: str
@@ -87,7 +91,10 @@ class DataSource(SQLModel, table=True):
     )
 
 
+# --------------------------------------------------------------
+# Actor
 # table to track actors (country, subnational, city)
+# --------------------------------------------------------------
 class Actor(SQLModel, table=True):
     id: str = Field(primary_key=True)
     name: str
@@ -114,13 +121,17 @@ class Actor(SQLModel, table=True):
 
 # ============================================================
 #
-# Emissions contexual data
-# these tables help provide additional details on the emissions
+# Emissions contextual data
+# help provide additional details on the emissions
 # gas, sector, conversion factors, ...
 #
 # ============================================================
 
 
+# --------------------------------------------------------------
+# Global warming potential
+# tracks across IPCC assessment reports
+# --------------------------------------------------------------
 class GWP(SQLModel, table=True):
     id: str = Field(primary_key=True)
     gwp: float
@@ -145,6 +156,12 @@ class GWP(SQLModel, table=True):
     )
 
 
+# --------------------------------------------------------------
+# General sector table
+# allows a way to store sector information for any taxonomy
+# subsectors are linked to sectors through the parent_code
+# which also allows categories to link to subsectors
+# --------------------------------------------------------------
 class Sector(SQLModel, table=True):
     id: str = Field(primary_key=True)
     code: str
@@ -170,8 +187,11 @@ class Sector(SQLModel, table=True):
     )
 
 
-# to create a sector dag
+# --------------------------------------------------------------
+# sector bridge table
+# this allows many to many relationships, may not be necessary
 # useful if a sector belongs to multiple parent categories
+# --------------------------------------------------------------
 class SectorRelation(SQLModel, table=True):
     parent_id: str = Field(foreign_key="sector.id", primary_key=True)
     child_id: str = Field(foreign_key="sector.id", primary_key=True)
@@ -184,7 +204,12 @@ class SectorRelation(SQLModel, table=True):
 # ============================================================
 
 
-# raw emissions for each gas and sector
+# --------------------------------------------------------------
+# emissions
+# broken down by gas and sector
+# not aggregated across any variables
+# units = mass of gas
+# --------------------------------------------------------------
 class Emissions(SQLModel, table=True):
     id: str = Field(primary_key=True)
     actor_id: str = Field(foreign_key="actor.id")
@@ -211,9 +236,12 @@ class Emissions(SQLModel, table=True):
     )
 
 
-# raw emissions in for each gas and sector
-# in units of CO2e
-# do I even want to include this?
+# --------------------------------------------------------------
+# emissions
+# broken down by gas and sector
+# not aggregated across any variables
+# units = CO2-e
+# --------------------------------------------------------------
 class EmissionsCO2e(SQLModel, table=True):
     id: str = Field(primary_key=True)
     actor_id: str = Field(foreign_key="actor.id")
@@ -242,6 +270,12 @@ class EmissionsCO2e(SQLModel, table=True):
     )
 
 
+# --------------------------------------------------------------
+# Emissions
+# broken down by sector
+# aggregated by gas
+# units = CO2-e
+# --------------------------------------------------------------
 class EmissionsTotalSector(SQLModel, table=True):
     id: str = Field(primary_key=True)
     actor_id: str = Field(foreign_key="actor.id")
@@ -269,6 +303,12 @@ class EmissionsTotalSector(SQLModel, table=True):
     )
 
 
+# --------------------------------------------------------------
+# Emissions
+# this is total emissions for the year across all gasses
+# aggregated by gas and sector
+# units = CO2-e
+# --------------------------------------------------------------
 class EmissionsTotalCO2e(SQLModel, table=True):
     id: str = Field(primary_key=True)
     actor_id: str = Field(foreign_key="actor.id")
@@ -296,6 +336,10 @@ class EmissionsTotalCO2e(SQLModel, table=True):
     )
 
 
+# --------------------------------------------------------------
+# Targets
+# for types of targets see TargetType enum
+# --------------------------------------------------------------
 class Targets(SQLModel, table=True):
     id: str = Field(primary_key=True)
     actor_id: str = Field(foreign_key="actor.id")
@@ -331,6 +375,9 @@ class Targets(SQLModel, table=True):
 # ============================================================
 
 
+# --------------------------------------------------------------
+# Gross domestic product
+# --------------------------------------------------------------
 class GDP(SQLModel, table=True):
     id: str = Field(primary_key=True)
     year: int
@@ -354,6 +401,9 @@ class GDP(SQLModel, table=True):
     )
 
 
+# --------------------------------------------------------------
+# Population
+# --------------------------------------------------------------
 class Population(SQLModel, table=True):
     id: str = Field(primary_key=True)
     year: int
@@ -377,6 +427,9 @@ class Population(SQLModel, table=True):
     )
 
 
+# --------------------------------------------------------------
+# Energy consumption
+# --------------------------------------------------------------
 class EnergyConsumption(SQLModel, table=True):
     id: str = Field(primary_key=True)
     year: int
@@ -406,18 +459,19 @@ class EnergyConsumption(SQLModel, table=True):
 # ============================================================
 #
 # Atmospheric Observations
-# these tables provide atmospheric observations
-# since LEDGER is primarily for emissions data
-# we have decided to only include the Keeling Curve for now
-# and have it stored in a dedicated table
 #
 # ============================================================
 
-class KeelingCurve(SQLModel, table=True):
+
+# --------------------------------------------------------------
+# concentration of CO2 in atmosphere
+# --------------------------------------------------------------
+class AtmosphericCO2(SQLModel, table=True):
     id: str = Field(primary_key=True)
     year: int
     month: Optional[int] = None
-    concentration: float # ppm 
+    datetime: Optional[float] = None
+    ppm: float
     datasource_id: str = Field(foreign_key="datasource.id")
     created_at: Optional[datetime] = Field(
         sa_column=Column(
