@@ -1,4 +1,3 @@
-import asyncio
 from fastapi import APIRouter
 import psycopg
 
@@ -18,7 +17,12 @@ async def fetch_gwp(assessment_report):
             return rows
 
 
-@router.get("/gwp")
+@router.get(
+    "/gwp",
+    tags=["Emissions Contextual Data"],
+    summary="Global Warming Potentials",
+    response_description="GWP",
+)
 async def gwp(assessment_report: str = "AR6"):
     """
     Returns global warming potentials (GWP)
