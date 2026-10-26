@@ -81,3 +81,12 @@ rule c40:
         "logs/c40.log"
     shell:
         "importer bulk c40 > {output}"
+
+
+rule crosswalk_labs:
+    input:
+        "logs/locode.log"
+    output:
+        "logs/crosswalk-labs.log"
+    shell:
+        "importer bulk crosswalk-labs > {output}"

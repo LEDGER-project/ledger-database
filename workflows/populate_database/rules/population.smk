@@ -44,3 +44,15 @@ rule abs_national_state_and_territory_population:
         "logs/abs-national-state-and-territory-population.log"
     shell:
         "importer bulk abs-national-state-and-territory-population > {output}"
+
+
+#---------------------------------------------------
+# UK state populations
+#---------------------------------------------------
+rule ons_ukpopulationestimates:
+    input:
+        "logs/iso-3166-2.log"
+    output:
+        "logs/ons-ukpopulationestimates.log"
+    shell:
+        "importer bulk ons-ukpopulationestimates > {output}"
