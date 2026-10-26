@@ -101,3 +101,12 @@ alembic upgrade head
 ## Snakemake Workflows
 
 Once the raw data is processed with scripts, the data can be imported into the data with [snakemake](https://snakemake.readthedocs.io/en/stable/) rules. To populate the database, navigate to `/workflows/populate_database` and run `snakemake -j 1` this runs the snakemake rules on a single CPU. These rules ensure the data is imported in dependency order.
+
+## Wiping the database
+
+If you absolutely have to wipe the database for some reason and re-import the data, here are the steps you should follow:
+
+1. `psql` into the database
+2. run ` DROP SCHEMA public CASCADE; CREATE SCHEMA public;`
+3. run `alembic upgrade head` to rebuild the tables. You may have to delete the version and rerun `alembic revision ...`
+4. populate the database by navigating to workflows/populate_database and run `snakemake -j 1`
