@@ -169,6 +169,7 @@ def main():
             sector_id = lambda x: x["sector"].apply(lambda row: f"crosswalk-labs:{row}"),
             gas = "CO2")
         .loc[:,["year", "actor_id", "gas", "emissions", "units", "sector_id"]]
+        .drop_duplicates()
     )
 
     emissions_validated = [
