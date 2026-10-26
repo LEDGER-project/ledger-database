@@ -95,6 +95,9 @@ alembic upgrade head
 > since we are still in development phase, let's stick with a single migration file for the time being
 
 
+> [!NOTE]
+> had to update `env.py` so knows about `.env`, made sure `.env` was right and update `scriptpy.mako` so imports `sqlmodel`
 
-# alembic
-had to update env.py so knows about .env, made sure .env was right and update scriptpy.mako so imports sqlmodel
+## Snakemake Workflows
+
+Once the raw data is processed with scripts, the data can be imported into the data with [snakemake](https://snakemake.readthedocs.io/en/stable/) rules. To populate the database, navigate to `/workflows/populate_database` and run `snakemake -j 1` this runs the snakemake rules on a single CPU. These rules ensure the data is imported in dependency order.
