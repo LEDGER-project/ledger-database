@@ -1,8 +1,8 @@
 """initialize database
 
-Revision ID: 20260514233324
+Revision ID: 20261025211553
 Revises: 
-Create Date: 2026-05-14 23:33:25.104150
+Create Date: 2026-10-25 21:15:54.275256
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '20260514233324'
+revision: str = '20261025211553'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -45,6 +45,18 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['datasource_id'], ['datasource.id'], ),
     sa.ForeignKeyConstraint(['is_part_of'], ['actor.id'], ),
     sa.ForeignKeyConstraint(['sovereign_code'], ['actor.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('atmosphericco2',
+    sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('year', sa.Integer(), nullable=False),
+    sa.Column('month', sa.Integer(), nullable=True),
+    sa.Column('datetime', sa.Float(), nullable=True),
+    sa.Column('ppm', sa.Float(), nullable=False),
+    sa.Column('datasource_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+    sa.ForeignKeyConstraint(['datasource_id'], ['datasource.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('gwp',
@@ -94,7 +106,7 @@ def upgrade() -> None:
     sa.Column('sector_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('gas', sa.Enum('CO2', 'CH4', 'CH4_fossil', 'CH4_nonfossil', 'N2O', 'NF3', 'SF6', 'FGASES', 'HFCS', 'PFCS', 'KYOTOGHGS', name='gastype'), nullable=False),
     sa.Column('gwp_id', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('assessment_report', sa.Enum('AR1', 'AR2', 'AR3', 'AR4', 'AR5', 'AR6', name='assessmentreport'), nullable=False),
+    sa.Column('assessment_report', sa.Enum('AR1', 'AR2', 'AR3', 'AR4', 'AR5', 'AR6', name='assessmentreport'), nullable=True),
     sa.Column('year', sa.Integer(), nullable=False),
     sa.Column('emissions', sa.Float(), nullable=False),
     sa.Column('units', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -114,7 +126,7 @@ def upgrade() -> None:
     sa.Column('emissions', sa.Float(), nullable=False),
     sa.Column('aggregation_type', sa.Enum('total', 'total_ex_lulucf', name='aggregationtype'), nullable=False),
     sa.Column('units', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('assessment_report', sa.Enum('AR1', 'AR2', 'AR3', 'AR4', 'AR5', 'AR6', name='assessmentreport'), nullable=False),
+    sa.Column('assessment_report', sa.Enum('AR1', 'AR2', 'AR3', 'AR4', 'AR5', 'AR6', name='assessmentreport'), nullable=True),
     sa.Column('gases_included', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('datasource_id', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
@@ -129,7 +141,7 @@ def upgrade() -> None:
     sa.Column('sector_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('year', sa.Integer(), nullable=False),
     sa.Column('emissions', sa.Float(), nullable=False),
-    sa.Column('assessment_report', sa.Enum('AR1', 'AR2', 'AR3', 'AR4', 'AR5', 'AR6', name='assessmentreport'), nullable=False),
+    sa.Column('assessment_report', sa.Enum('AR1', 'AR2', 'AR3', 'AR4', 'AR5', 'AR6', name='assessmentreport'), nullable=True),
     sa.Column('gases_included', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
     sa.Column('units', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('datasource_id', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
@@ -218,6 +230,7 @@ def downgrade() -> None:
     op.drop_table('emissions')
     op.drop_table('sector')
     op.drop_table('gwp')
+    op.drop_table('atmosphericco2')
     op.drop_table('actor')
     op.drop_table('datasource')
     # ### end Alembic commands ###
