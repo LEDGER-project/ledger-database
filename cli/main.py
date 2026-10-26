@@ -1,6 +1,9 @@
 import csv
+import os
 from pathlib import Path
 import subprocess
+
+from dotenv import load_dotenv
 
 import pandas as pd
 import psycopg
@@ -11,9 +14,14 @@ import typer
 
 import models
 
-# this the default database url if one is not specified
-# this is just running postgres on localhost
-DEFAULT_URL = "postgresql://postgres:postgres@127.0.0.1:5432/ledger"
+
+# set the DEFAULT_URL from the .env file
+# If running locally it should be 
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
+DEFAULT_URL = os.getenv("HOST_DATABASE_URL") or os.getenv("DATABASE_URL")
+if not DEFAULT_URL:
+    raise RuntimeError("DATABASE_URL is not set")
 
 app = typer.Typer()
 
