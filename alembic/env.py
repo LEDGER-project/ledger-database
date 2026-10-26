@@ -17,7 +17,7 @@ import models
 envfile = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=envfile)
 
-DATABASE_URL= os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("HOST_DATABASE_URL") or os.getenv("DATABASE_URL")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
