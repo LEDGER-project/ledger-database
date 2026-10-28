@@ -5,6 +5,7 @@ include: "rules/emission_targets.smk"
 include: "rules/emissions.smk"
 include: "rules/gwp.smk"
 include: "rules/sectors.smk"
+include: "rules/initiatives.smk"
 # include: "rules/energy_consumption.smk"
 
 rule all:
@@ -31,4 +32,5 @@ rule all:
         "logs/au-state-emissions.log",
         "logs/carbon-monitor-cities.log",
         "logs/c40.log",
+        "logs/us-climate-alliance.log"
         #"logs/crosswalk-labs.log"
