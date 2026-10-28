@@ -65,3 +65,14 @@ async def enum_target():
 async def enum_aggregation():
     data = await fetch_type("aggregationtype")
     return data
+
+
+
+@router.get(
+    "/enum/initiative",
+    tags=["Enumerated Types"],
+    summary="Types of initiatives",
+)
+async def enum_initiative():
+    data = await fetch_type("initiativetype")
+    return data

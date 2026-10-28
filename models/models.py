@@ -39,6 +39,12 @@ class TargetType(str, Enum):
     target_reduction = "target_reduction"
 
 
+class InitiativeType(str, Enum):
+    us_climate_alliance = "us_climate_alliance"
+    regional_greenhouse_gas_initiative = "regional_greenhouse_gas_initiative"
+    climate_mayors = "climate_mayors"
+    c40 = "c40"
+
 class AggregationType(str, Enum):
     total = "total"
     total_ex_lulucf = "total_ex_lulucf"
@@ -335,6 +341,32 @@ class EmissionsTotalCO2e(SQLModel, table=True):
         )
     )
 
+
+# --------------------------------------------------------------
+# Initiatives
+# for types of initiatives see InitiativeType enum
+# --------------------------------------------------------------
+class Initiatives(SQLModel, table=True):
+    id: str = Field(primary_key=True)
+    actor_id: str = Field(foreign_key="actor.id")
+    initiative: InitiativeType
+    url: Optional[str]
+    datasource_id: str = Field(foreign_key="datasource.id")
+    created_at: Optional[datetime] = Field(
+        sa_column=Column(
+            TIMESTAMP(timezone=True),
+            nullable=False,
+            server_default=text("CURRENT_TIMESTAMP"),
+        )
+    )
+    updated_at: Optional[datetime] = Field(
+        sa_column=Column(
+            TIMESTAMP(timezone=True),
+            nullable=False,
+            server_default=text("CURRENT_TIMESTAMP"),
+            server_onupdate=FetchedValue(),
+        )
+    )
 
 # --------------------------------------------------------------
 # Targets
