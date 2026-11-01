@@ -2,7 +2,7 @@
 paper/jats/
 
 #snakemake
-.snakemake
+.snakemake/
 
 #directories
 data/
