@@ -23,7 +23,6 @@ rule all:
         "logs/abs-national-state-and-territory-population.log",
         "logs/ons-ukpopulationestimates.log",
         "logs/net-zero-tracker.log",
-        "logs/net-zero-regions.log",
         "logs/primap.log",
         "logs/unfccc-annex1.log",
         "logs/epa-state-emissions.log",
