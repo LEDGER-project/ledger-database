@@ -1,8 +1,8 @@
 """initialize database
 
-Revision ID: 20261025211553
+Revision ID: 20261102154657
 Revises: 
-Create Date: 2026-10-25 21:15:54.275256
+Create Date: 2026-11-02 15:46:58.829350
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '20261025211553'
+revision: str = '20261102154657'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -179,6 +179,18 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['datasource_id'], ['datasource.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('initiatives',
+    sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('actor_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('initiative', sa.Enum('us_climate_alliance', 'regional_greenhouse_gas_initiative', 'climate_mayors', 'c40', name='initiativetype'), nullable=False),
+    sa.Column('url', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('datasource_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('CURRENT_TIMESTAMP'), nullable=False),
+    sa.ForeignKeyConstraint(['actor_id'], ['actor.id'], ),
+    sa.ForeignKeyConstraint(['datasource_id'], ['datasource.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('population',
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('year', sa.Integer(), nullable=False),
@@ -222,6 +234,7 @@ def downgrade() -> None:
     op.drop_table('targets')
     op.drop_table('sectorrelation')
     op.drop_table('population')
+    op.drop_table('initiatives')
     op.drop_table('gdp')
     op.drop_table('energyconsumption')
     op.drop_table('emissionstotalsector')
