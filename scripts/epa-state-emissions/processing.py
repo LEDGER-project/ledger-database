@@ -228,7 +228,7 @@ def main():
             "ghg_category", 
             "subsector", 
             "ghg", 
-            "category"]
+            ]
             )
         .rename(columns={"subsector_updated": "subsector", "ghg_category_updated":"gas"})
         .query("emissions > 0")
@@ -271,6 +271,11 @@ def main():
 
     )
 
+
+    #
+    # subsector
+    #
+
     # including a groupby().agg() in here because liming is from dolomite and limestone
     # currently we do not have emissions broken down into categories yet
     df_emissions_subsector = (
@@ -288,6 +293,10 @@ def main():
             "units": str
         })
     )
+    
+    #
+    # sector
+    #
 
     df_emissions_sector = (
         df
@@ -307,7 +316,96 @@ def main():
         })
     )
 
-    df_total_sector = pd.concat([df_emissions_sector, df_emissions_subsector])
+    #
+    # Categories 
+    #
+
+    category_replace_dict = {
+        "category":{
+            "commercial": "other sectors",
+            "electricity generation": "energy industries",
+            "industrial": "manufacturing industries and construction",
+            "residential": "other sectors",
+            "transportation": "transport",
+            "incineration" : "energy industries",
+        }
+    }
+
+    df_fuel_combustion = (
+        df_sector_all
+        .query("parent_code == '1.A'")
+        .loc[:, ["sector_id", "code", "parent_code", "name_sanitized"]]
+    )
+
+    df_emissions_categories = (
+        df
+        .assign(
+                category=lambda x: x.apply(
+                    lambda row: row["category"].replace("-", " ").replace(",", "").lower(),
+                    axis=1,
+                )
+        )
+        .query("subsector == 'fuel combustion'")
+        .replace(category_replace_dict)
+        .drop(columns=["sector_id", "code", "parent_code", "name_sanitized", "sector_sanitized"])
+        .merge(df_fuel_combustion, left_on="category", right_on="name_sanitized")
+        .loc[:, ["actor_id", "sector_id", "year", "emissions", "assessment_report", "gases_included", "units"]]
+        .groupby(by=["actor_id", "sector_id", "year",  "assessment_report", "gases_included", "units"]).agg("sum")
+        .reset_index()
+        .astype({
+            "actor_id": str,
+            "sector_id": str,
+            "year": int,
+            "emissions": float,
+            "assessment_report": str,
+            "gases_included": str,
+            "units": str
+        })
+    )
+
+
+    #
+    # Subcategories 
+    #
+
+    df_1A4 = (
+        df_sector_all
+        .query("parent_code == '1.A.4'")
+        .loc[:, ["sector_id", "code", "parent_code", "name_sanitized"]]
+    )
+
+    df_emissions_subcategories = (
+        df
+        .assign(
+                category=lambda x: x.apply(
+                    lambda row: row["category"].replace("-", " ").replace(",", "").lower(),
+                    axis=1,
+                )
+    )
+        .query("subsector == 'fuel combustion' and category.isin(['commercial','residential'])")
+        .drop(columns=["sector_id", "code", "parent_code", "name_sanitized", "sector_sanitized"])
+        .merge(df_1A4, left_on="category", right_on="name_sanitized")
+        .loc[:, ["actor_id", "sector_id", "year", "emissions", "assessment_report", "gases_included", "units"]]
+        .groupby(by=["actor_id", "sector_id", "year",  "assessment_report", "gases_included", "units"]).agg("sum")
+        .reset_index()
+        .astype({
+            "actor_id": str,
+            "sector_id": str,
+            "year": int,
+            "emissions": float,
+            "assessment_report": str,
+            "gases_included": str,
+            "units": str
+        })
+    )
+
+
+    df_total_sector = pd.concat([
+        df_emissions_sector, 
+        df_emissions_subsector, 
+        df_emissions_categories, 
+        df_emissions_subcategories
+        ])
 
     # ------------------------------------------
     # emissions total sector
