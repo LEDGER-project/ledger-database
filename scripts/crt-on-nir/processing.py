@@ -41,21 +41,35 @@ def main():
     # ------------------------------------------
     fl = data_dir / "raw" / "crt.xlsx"
 
-    df = pd.read_excel(fl, sheet_name="Summary1", header=9).loc[
-        lambda x: x["Total national emissions and removals"].str.match(r"^\d", na=False)
-    ]
-
-    df[["code", "name"]] = df["Total national emissions and removals"].str.split(
-        n=1, expand=True
+    df_crt = (
+        pd.read_excel(fl, sheet_name="Summary1", header=9)
+        .loc[lambda x: x["Total national emissions and removals"].str.match(r"^\d", na=False)]
+        .assign(
+            code=lambda x: x["Total national emissions and removals"].str.split(n=1, expand=True)[0].str.rstrip("."),
+            name=lambda x: x["Total national emissions and removals"].str.split(n=1, expand=True)[1].str.rstrip().str.replace(r"(?:\s*\([^)]+\))+$", "", regex=True).str.strip(),
+        )
+        .assign(
+            parent_code = lambda x: x["code"].str.extract(r"^(.*)\.[^.]+$")[0]
+        )
+        .loc[:, lambda d: ~d.columns.str.contains("^Unnamed")]
+        .fillna("")
+        .astype({"code": str, "parent_code": str, "name": str})
+        .drop(columns=["Total national emissions and removals"])
     )
-    df["code"] = df["code"].str.rstrip(".")
-    df["parent_code"] = df["code"].str.extract(r"^(.*)\.[^.]+$")[0]
-    df["name"] = df["name"].str.rstrip()
-    df["name"] = (
-        df["name"].str.replace(r"(?:\s*\([^)]+\))+$", "", regex=True).str.strip()
+
+    # Note: these are not in this particular dataset
+    # but they are part of the IPCC guidelines
+    # including them to breakdown EPA state inventories
+    # see table 2.1 in https://www.ipcc-nggip.iges.or.jp/public/2006gl/pdf/2_Volume2/V2_2_Ch2_Stationary_Combustion.pdf
+    df_1A4 = pd.DataFrame(
+        [
+            ("1.A.4.a", "Commercial", "1.A.4"),
+            ("1.A.4.b", "Residential", "1.A.4"),
+        ],
+        columns=["code", "name", "parent_code"],
     )
 
-    df = df.fillna("").astype({"code": str, "parent_code": str, "name": str})
+    df = pd.concat([df_crt, df_1A4], ignore_index=True).sort_values(by="code")
 
     sector_validated = [
         Sector(
