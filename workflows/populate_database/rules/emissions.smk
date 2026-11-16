@@ -1,3 +1,12 @@
+rule eia:
+    input:
+        "logs/iso-3166-2.log",
+        "logs/crt-on-nir.log",
+    output:
+        "logs/eia.log"
+    shell:
+        "importer bulk eia > {output}"
+
 rule unfccc_annex1:
     input:
         "logs/iso-3166-1.log",

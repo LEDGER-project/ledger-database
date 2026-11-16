@@ -18,6 +18,7 @@ rule all:
         "logs/locode.log",
         "logs/wpp.log",
         "logs/world-bank-gdp.log",
+        "logs/dose.log",
         "logs/fred-state-population.log",
         "logs/canada-province-population.log",
         "logs/abs-national-state-and-territory-population.log",
@@ -32,4 +33,5 @@ rule all:
         "logs/carbon-monitor-cities.log",
         "logs/c40.log",
         "logs/us-climate-alliance.log"
+        "logs/eia.log
         #"logs/crosswalk-labs.log"
