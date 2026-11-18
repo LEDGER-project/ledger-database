@@ -110,7 +110,7 @@ async def fetch_energy_consumption(actor_id):
                     fuel_type,
                     energy_source,
                     datasource_id  
-                FROM energyconsupmtion 
+                FROM energyconsumption 
                 WHERE actor_id = %(actor_id)s;
                 """,
                 {
@@ -379,7 +379,7 @@ async def actor_population(actor_id: str):
     summary="Energy consumption of an actor",
     response_description="Time series of energy consumption for given actor",
 )
-async def get_energy_consumption(actor_id: str):
+async def actor_energy_consumption(actor_id: str):
     """
     Returns energy consumption for specific actor
     """
