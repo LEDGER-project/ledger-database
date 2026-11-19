@@ -314,7 +314,29 @@ async def fetch_actor_targets(actor_id):
             rows = await cur.fetchall()
             return rows
 
-
+async def fetch_energy_emissions_by_source(actor_id):
+    async with await get_connection() as conn:
+        async with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
+            await cur.execute(
+                """
+                SELECT 
+                    actor_id, 
+                    gas,
+                    source,
+                    year,
+                    emissions,
+                    units,
+                    datasource_id
+                FROM energyemissionsbysource
+                WHERE actor_id = %(actor_id)s;
+                """,
+                {
+                    "actor_id": actor_id,
+                },
+            )
+            rows = await cur.fetchall()
+            return rows
+   
 @router.get(
     "/actor",
     tags=["Actors"],
@@ -386,6 +408,18 @@ async def actor_energy_consumption(actor_id: str):
     data = await fetch_energy_consumption(actor_id)
     return data
 
+@router.get(
+    "/actor/{actor_id}/energy_emissions_by_source",
+    tags=["Actors"],
+    summary="Energy emissions of an actor",
+    response_description="Time series of energy emissions for given actor",
+)
+async def actor_energy_emissions_by_source(actor_id: str):
+    """
+    Returns energy emissions by source for specific actor
+    """
+    data = await fetch_energy_emissions_by_source(actor_id)
+    return data
 
 @router.get(
     "/actor/{actor_id}/targets",
