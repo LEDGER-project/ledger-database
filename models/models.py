@@ -343,6 +343,38 @@ class EmissionsTotalCO2e(SQLModel, table=True):
 
 
 # --------------------------------------------------------------
+# enery emissions by source
+# broken down by gas and sector
+# not aggregated across any variables
+# units = mass of gas
+# --------------------------------------------------------------
+class EnergyEmissionsBySource(SQLModel, table=True):
+    id: str = Field(primary_key=True)
+    actor_id: str = Field(foreign_key="actor.id")
+    gas: GasType
+    source: str
+    year: int
+    emissions: float
+    units: str
+    datasource_id: Optional[str] = Field(foreign_key="datasource.id")
+    created_at: Optional[datetime] = Field(
+        sa_column=Column(
+            TIMESTAMP(timezone=True),
+            nullable=False,
+            server_default=text("CURRENT_TIMESTAMP"),
+        )
+    )
+    updated_at: Optional[datetime] = Field(
+        sa_column=Column(
+            TIMESTAMP(timezone=True),
+            nullable=False,
+            server_default=text("CURRENT_TIMESTAMP"),
+            server_onupdate=FetchedValue(),
+        )
+    )
+
+
+# --------------------------------------------------------------
 # Initiatives
 # for types of initiatives see InitiativeType enum
 # --------------------------------------------------------------

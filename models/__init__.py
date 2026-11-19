@@ -19,6 +19,7 @@ from .models import (
     GDP,
     Population,
     EnergyConsumption,
+    EnergyEmissionsBySource,
 )
 
 __all__ = [
@@ -42,4 +43,5 @@ __all__ = [
     "GDP",
     "Population",
     "EnergyConsumption",
+    "EnergyEmissionsBySource",
 ]
