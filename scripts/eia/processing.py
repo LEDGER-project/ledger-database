@@ -8,7 +8,8 @@ from models import (
     GasType,
     DataSource,
     Emissions,
-    EnergyConsumption
+    EnergyConsumption,
+    EnergyEmissionsBySource
 )
 
 
@@ -77,6 +78,14 @@ def main():
         / "eia"
         / "raw"
         / "co2_total.xlsx"
+    )
+
+    fl_source = (
+        Path().cwd().parent.parent
+        / "data"
+        / "eia"
+        / "raw"
+        / "CO2_source.xlsx"
     )
 
     YEAR_START = 1960
@@ -196,6 +205,69 @@ def main():
         data=emissions_validated,
         mode="w",
     )
+
+    # ------------------------------------------
+    # energy emissions by source
+    # ------------------------------------------
+
+    sheets = [
+        'Coal',
+        'Natural gas',
+        'Petroleum',
+    ]
+
+    id_vars = ["State"]
+    value_vars = [num for num in range(YEAR_START, YEAR_END+1)]
+
+    dfs = []
+
+    for sheet_name in sheets:
+        df_tmp = (
+            pd.read_excel(fl_source, sheet_name=sheet_name, header=2)
+            .query("State != 'US'")
+            .melt(
+                id_vars=id_vars,
+                value_vars=value_vars,
+                value_name="emissions",
+                var_name="year",
+            )
+            .query("emissions >0")
+            .assign(
+                    actor_id=lambda x: x.apply(
+                        lambda row: f"US-{row["State"]}",
+                        axis=1,
+                    ),
+                    emissions = lambda x: x["emissions"] * 1_000_000,
+                    units = "CO2 * tonne",
+                    energy_source = sheet_name
+            )
+        )
+
+        dfs.append(df_tmp)
+
+    df_source = pd.concat(dfs)
+
+
+    energy_emissions_by_source_validated = [EnergyEmissionsBySource(
+        id = f"{row.actor_id}:{row.year}:{"CO2"}:{row.energy_source}",
+        actor_id = row.actor_id,
+        gas = GasType("CO2"),
+        year = row.year,
+        emissions = row.emissions,
+        units = row.units,
+        source = row.energy_source,
+        datasource_id =  datasource.id,
+        ).model_dump()
+        for row in df_source.itertuples()
+    ]
+
+    write_csv(
+        output_dir=output_dir,
+        name=EnergyEmissionsBySource.__tablename__,
+        data=energy_emissions_by_source_validated,
+        mode="w",
+    )
+
 
 
 if __name__ == "__main__":
